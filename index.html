@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<title>Календар завдань з дедлайном</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="container">
+  <h1>Календар завдань</h1>
+
+  <form id="taskForm">
+    <input type="text" id="taskInput" placeholder="Назва завдання" required>
+    <input type="date" id="taskDate" required>
+    <input type="date" id="taskDeadline" required>
+    <button type="submit">Додати</button>
+  </form>
+
+  <div id="calendar"></div>
+
+  <div id="quoteSection">
+    <h2>Цитата для натхнення:</h2>
+    <p id="quoteText">Завантаження...</p>
+  </div>
+
+  <button id="clearTasks">Очистити всі задачі</button>
+</div>
+
+<script src="script.js"></script>
+</body>
+</html>
