@@ -31,10 +31,15 @@ function renderCalendar() {
     tasksByDate[date].forEach((task, index) => {
       const li = document.createElement('div');
       li.className = 'taskItem';
+      if (task.done) li.classList.add('done');
       li.innerHTML = `
-        <span>${task.name}</span>
-        <span class="deadline">⏳ ${task.deadline}</span>
-        <button data-date="${date}" data-index="${index}" class="deleteBtn">🗑️</button>
+        <span>date: ${task.date}</span>
+        <span>task: ${task.name}</span>
+        <span>deadline: ${task.deadline}</span>
+        <div class="buttons">
+          <button data-date="${date}" data-index="${index}" class="deleteBtn">del</button>
+          <button data-date="${date}" data-index="${index}" class="doneBtn">done</button>
+        </div>
       `;
       dayDiv.appendChild(li);
     });
@@ -50,22 +55,30 @@ taskForm.addEventListener('submit', e => {
   const deadline = taskDeadline.value;
 
   if (!name || !date || !deadline) return alert('Заповніть усі поля!');
-  tasks.push({ name, date, deadline });
+  tasks.push({ name, date, deadline, done: false });
   saveTasks();
   renderCalendar();
   taskForm.reset();
 });
 
 calendar.addEventListener('click', e => {
+  const date = e.target.dataset.date;
+  const index = parseInt(e.target.dataset.index);
+
   if (e.target.classList.contains('deleteBtn')) {
-    const date = e.target.dataset.date;
-    const index = parseInt(e.target.dataset.index);
     const tasksOnDate = tasks.filter(t => t.date === date);
     const taskToDelete = tasksOnDate[index];
-    const globalIndex = tasks.findIndex(t => t.name === taskToDelete.name
-        && t.date === taskToDelete.date 
-        && t.deadline === taskToDelete.deadline);
+    const globalIndex = tasks.findIndex(t => t.name === taskToDelete.name && t.date === taskToDelete.date && t.deadline === taskToDelete.deadline);
     tasks.splice(globalIndex, 1);
+    saveTasks();
+    renderCalendar();
+  }
+
+  if (e.target.classList.contains('doneBtn')) {
+    const tasksOnDate = tasks.filter(t => t.date === date);
+    const taskToMark = tasksOnDate[index];
+    const globalIndex = tasks.findIndex(t => t.name === taskToMark.name && t.date === taskToMark.date && t.deadline === taskToMark.deadline);
+    tasks[globalIndex].done = !tasks[globalIndex].done;
     saveTasks();
     renderCalendar();
   }
@@ -87,7 +100,6 @@ async function fetchQuote() {
     const data = await res.json();
     quoteText.textContent = `"${data.content}" — ${data.author}`;
   } catch(err) {
-    console.error(err);
     const fallback = [
       "Дій, навіть якщо боїшся — невдача не страшна.",
       "Крок за кроком — і ти дійдеш до мети.",
